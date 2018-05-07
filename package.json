@@ -1,0 +1,13 @@
+{
+  "name": "DICE-ICO",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "compile": "truffle compile"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "1.9.0",
+    "truffle": "^4.1.8"
+  }
+}
