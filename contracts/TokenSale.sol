@@ -17,7 +17,8 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
   uint public minContribution;
   uint public maxContribution;
 
-  function TokenSale(uint _openingTime, uint _endTime, uint _hardCap, address _token, address _reserveWallet, uint _minContribution, uint _maxContribution)
+  function TokenSale(uint _openingTime, uint _endTime, uint _rate, uint _hardCap, ERC20 _token, address _reserveWallet, uint _minContribution, uint _maxContribution)
+  Crowdsale(_rate, _reserveWallet, _token)
   CappedCrowdsale(_hardCap) TimedCrowdsale(_openingTime, _endTime) {
     require(_token != address(0));
     require(_reserveWallet !=address(0));
@@ -29,16 +30,18 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
     maxContribution = _maxContribution;
   }
 
-  function initRates(uint[] _rates, uint[] _times) public onlyOwner {
+  function initRates(uint[] _rates, uint[] _times) external onlyOwner {
     require(now < openingTime);
     require(_rates.length == _times.length);
     require(_rates.length > 0);
+    require(!initialized);
     noOfWaves = _rates.length;
 
     for(uint8 i=0;i<_rates.length;i++) {
       rates[i] = _rates[i];
       times[i] = _times[i];
     }
+    initialized = true;
   }
 
   function getCurrentRate() public view returns (uint256) {
@@ -91,5 +94,6 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     require(_weiAmount >= minContribution);
     require(_weiAmount <= maxContribution);
+    super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 }
