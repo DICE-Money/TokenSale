@@ -67,12 +67,12 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
     reserveWallet = _reserve;
   }
 
-  function minContribution(uint _min) onlyOwner public {
+  function setMinContribution(uint _min) onlyOwner public {
     require(_min > 0);
     minContribution = _min;
   }
 
-  function maxContribution(uint _max) onlyOwner public {
+  function setMaxContribution(uint _max) onlyOwner public {
     require(_max > 0);
     maxContribution = _max;
   }
@@ -87,8 +87,9 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
     //overridden to make the smart contracts hold funds and not the wallet
   }
 
-  function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {
-    token.transfer(_beneficiary, _tokenAmount);
+  function withdrawFunds(uint value) onlyOwner external {
+    require(this.balance >= value);
+    wallet.transfer(value);
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
