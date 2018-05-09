@@ -3,9 +3,10 @@ import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol';
+import 'openzeppelin-solidity/contracts/ownership/Whitelist.sol';
 
 
-contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
+contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist {
 
   bool public initialized;
   uint[10] public rates;
@@ -87,9 +88,9 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale {
     //overridden to make the smart contracts hold funds and not the wallet
   }
 
-  function withdrawFunds(uint value) onlyOwner external {
+  function withdrawFunds(uint value) onlyWhitelisted external {
     require(this.balance >= value);
-    wallet.transfer(value);
+    msg.sender.transfer(value);
   }
 
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
