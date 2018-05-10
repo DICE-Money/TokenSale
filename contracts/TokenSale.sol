@@ -13,7 +13,6 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist 
   uint[10] public times;
   uint public noOfWaves;
   address public wallet;
-  ERC20 public token;
   address public reserveWallet;
   uint public minContribution;
   uint public maxContribution;
@@ -26,7 +25,6 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist 
     require(_maxContribution > 0);
     require(_minContribution > 0);
     reserveWallet = _reserveWallet;
-    token = ERC20(_token);
     minContribution = _minContribution;
     maxContribution = _maxContribution;
   }
@@ -35,7 +33,6 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist 
     require(now < openingTime);
     require(_rates.length == _times.length);
     require(_rates.length > 0);
-    require(!initialized);
     noOfWaves = _rates.length;
 
     for(uint8 i=0;i<_rates.length;i++) {
@@ -79,6 +76,7 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist 
   }
 
   function finalization() internal {
+    require(wallet != address(0));
     wallet.transfer(this.balance);
     token.transfer(reserveWallet, token.balanceOf(this));
     super.finalization();
