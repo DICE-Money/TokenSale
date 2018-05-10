@@ -4,9 +4,9 @@ import 'openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol
 import 'openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/ownership/Whitelist.sol';
+import 'openzeppelin-solidity/contracts/lifecycle/Pausable.sol';
 
-
-contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist {
+contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist, Pausable {
 
   bool public initialized;
   uint[10] public rates;
@@ -91,7 +91,7 @@ contract TokenSale is Ownable, CappedCrowdsale, FinalizableCrowdsale, Whitelist 
     msg.sender.transfer(value);
   }
 
-  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) whenNotPaused internal {
     require(_weiAmount >= minContribution);
     require(_weiAmount <= maxContribution);
     super._preValidatePurchase(_beneficiary, _weiAmount);
